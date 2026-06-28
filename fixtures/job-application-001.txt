@@ -1,0 +1,23 @@
+Cover Letter
+
+Dear Hiring Manager,
+
+I am applying for the position of Senior Engineer advertised on your
+careers page. I have 12 years of experience building distributed systems
+at scale. My CV / resume is attached.
+
+I'm particularly drawn to your work on real-time data pipelines, having
+spent 5 years at a similar company building exactly this kind of system.
+
+References available upon request.
+
+Sincerely,
+Jordan Lee
+jordan.lee@example.com
+
+---
+
+Curriculum Vitae - Jordan Lee
+Years of experience: 12
+Skills: distributed systems, Python, Go, Kubernetes, Postgres
+Most recent role: Senior Engineer, Bayview Systems (2021-present)

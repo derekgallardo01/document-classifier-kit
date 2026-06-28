@@ -1,0 +1,19 @@
+MASTER SERVICES AGREEMENT
+
+This Agreement is made between the parties:
+Party A: Northwind Software Limited
+Party B: Acme Manufacturing Inc.
+
+Whereas Party A wishes to license certain software to Party B,
+the parties agree as follows:
+
+Effective Date: 2026-01-15
+Initial term: 36 months commencing on the Effective Date.
+
+Renewal: Auto-renewal for successive 12-month periods unless either
+party gives 90 days written notice of termination.
+
+Governing Law: This Agreement is governed by the laws of the State
+of New York.
+
+Termination for cause requires 30 days notice and an opportunity to cure.

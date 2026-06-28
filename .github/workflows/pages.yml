@@ -1,0 +1,201 @@
+name: Deploy live demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: pip install --quiet -e .
+
+      - name: Generate the static demo report
+        run: |
+          mkdir -p site
+          python - <<'PY'
+          import html, json, sys
+          from dataclasses import asdict
+          from pathlib import Path
+          sys.path.insert(0, "src")
+          from doc_classifier.classifier import Classifier, route
+
+          FIXTURES = Path("fixtures")
+          clf = Classifier()
+          cards = []
+          for fixture in sorted(FIXTURES.glob("*.txt")):
+              text = fixture.read_text(encoding="utf-8")
+              r = clf.classify(text)
+              d = route(r, clf.catalog)
+              cards.append({"fixture": fixture.name, "text": text,
+                            "result": r.to_dict(), "routing": asdict(d)})
+
+          def render_candidates(cands):
+              return " · ".join(f"<code>{html.escape(n)}</code> {s:.2f}" for n, s in cands)
+
+          def card(c):
+              r = c["result"]
+              d = c["routing"]
+              status_class = "review" if d["review_required"] else "routed"
+              status_label = "HUMAN REVIEW" if d["review_required"] else "AUTO-ROUTED"
+              reason = ""
+              if d["review_required"]:
+                  reason = f"<div class='reason'>Reason: {html.escape(d['handoff_reason'] or '')}</div>"
+
+              text_preview = html.escape(c["text"].strip()[:400])
+              if len(c["text"]) > 400:
+                  text_preview += "..."
+
+              return f"""
+                <div class="card">
+                  <div class="card-header">
+                    <span class="badge {status_class}">{status_label}</span>
+                    <span class="fname">{html.escape(c['fixture'])}</span>
+                  </div>
+                  <details><summary>Document preview</summary><pre>{text_preview}</pre></details>
+                  <div class="grid">
+                    <div>
+                      <div class="kicker">Predicted label</div>
+                      <div class="label"><code>{html.escape(r['label'])}</code></div>
+                    </div>
+                    <div>
+                      <div class="kicker">Confidence</div>
+                      <div class="conf">{r['confidence']:.2f}</div>
+                    </div>
+                    <div>
+                      <div class="kicker">Routed to</div>
+                      <div class="queue"><code>{html.escape(d['queue'])}</code> · SLA {d['sla_hours']}h</div>
+                    </div>
+                  </div>
+                  <div class="kicker">Top 3 candidates</div>
+                  <div class="cands">{render_candidates(r['candidates'])}</div>
+                  {reason}
+                </div>
+              """
+
+          page = f"""<!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Document classifier kit - live demo</title>
+            <style>
+              :root {{
+                --primary: #6d28d9; --accent: #8b5cf6;
+                --bg: #f5f3ff; --border: #ddd6fe;
+                --ink: #1c0e3a; --muted: #6b5b7e;
+                --review: #c2410c; --routed: #047857;
+              }}
+              * {{ box-sizing: border-box; }}
+              body {{
+                margin: 0; font-family: 'Segoe UI', system-ui, sans-serif;
+                background: var(--bg); color: var(--ink); line-height: 1.5;
+              }}
+              .hero {{
+                background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+                color: white; padding: 50px 24px 60px;
+              }}
+              .hero-inner {{ max-width: 960px; margin: 0 auto; }}
+              .hero .kicker {{ font-size: 13px; letter-spacing: 2px; opacity: .75; text-transform: uppercase; }}
+              .hero h1 {{ font-size: 38px; margin: 10px 0 14px; line-height: 1.1; }}
+              .hero p {{ font-size: 17px; margin: 0; opacity: .92; max-width: 760px; }}
+              .container {{ max-width: 960px; margin: -30px auto 60px; padding: 0 24px; }}
+              .card {{
+                background: white; border: 1px solid var(--border); border-radius: 12px;
+                padding: 20px 24px; margin: 16px 0;
+                box-shadow: 0 1px 3px rgba(109, 40, 217, .08);
+              }}
+              .card-header {{ display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }}
+              .badge {{
+                color: white; padding: 4px 10px; border-radius: 12px;
+                font-size: 11px; letter-spacing: 1px; font-weight: 700;
+              }}
+              .badge.review {{ background: var(--review); }}
+              .badge.routed {{ background: var(--routed); }}
+              .fname {{ font-weight: 600; }}
+              details summary {{ cursor: pointer; color: var(--accent); font-weight: 600; margin-bottom: 8px; }}
+              pre {{
+                background: #1c0e3a; color: #ddd6fe; padding: 14px 16px;
+                border-radius: 8px; overflow-x: auto;
+                font-family: Consolas, Menlo, monospace; font-size: 12px;
+                white-space: pre-wrap; word-wrap: break-word;
+              }}
+              .grid {{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 12px 0; }}
+              .kicker {{
+                font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+                color: var(--muted); margin: 8px 0 4px; font-weight: 600;
+              }}
+              .label code, .queue code {{
+                background: #ede9fe; padding: 3px 8px; border-radius: 5px;
+                color: var(--primary); font-weight: 600; font-size: 14px;
+              }}
+              .conf {{ font-family: Consolas, monospace; font-size: 18px; font-weight: 600; }}
+              .queue {{ font-size: 13px; }}
+              .cands code {{
+                background: #f5f3ff; padding: 2px 7px; border-radius: 4px;
+                color: var(--primary); font-size: 12px;
+              }}
+              .reason {{ margin-top: 10px; color: var(--review); font-size: 13px; font-style: italic; }}
+              .footer {{
+                margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border);
+                color: var(--muted); font-size: 13px; text-align: center;
+              }}
+              .footer code {{ background: #ede9fe; padding: 2px 6px; border-radius: 4px; }}
+              a {{ color: var(--accent); }}
+            </style>
+          </head>
+          <body>
+            <div class="hero">
+              <div class="hero-inner">
+                <div class="kicker">Classification · Routing · Eval-Gated</div>
+                <h1>Document classifier kit - live demo</h1>
+                <p>Seven bundled fixtures span six classes plus one deliberately
+                ambiguous document. Each card shows the predicted label, the
+                confidence, the top 3 candidates, and which downstream queue
+                the router picked - or whether the doc was sent to human
+                review because confidence fell below the threshold.</p>
+              </div>
+            </div>
+
+            <div class="container">
+              {''.join(card(c) for c in cards)}
+
+              <div class="footer">
+                Regenerated on every push from the rules backend.
+                Install: <code>pip install -e .</code> then <code>doc-classifier demo</code>.<br>
+                Source: <a href="https://github.com/derekgallardo01/document-classifier-kit">github.com/derekgallardo01/document-classifier-kit</a>
+              </div>
+            </div>
+          </body>
+          </html>
+          """
+          with open("site/index.html", "w", encoding="utf-8") as fh:
+              fh.write(page)
+          print("wrote site/index.html")
+          PY
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

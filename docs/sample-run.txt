@@ -1,0 +1,9 @@
+  [REVIEW] ambiguous-001.txt              -> unknown            (0.00) -> human_review
+  [ROUTE] complaint-001.txt              -> customer_complaint (1.00) -> customer_success
+  [ROUTE] contract-001.txt               -> contract           (1.00) -> legal_review
+  [ROUTE] invoice-001.txt                -> invoice            (1.00) -> accounts_payable
+  [ROUTE] job-application-001.txt        -> job_application    (1.00) -> recruiting
+  [ROUTE] purchase-order-001.txt         -> purchase_order     (1.00) -> procurement
+  [ROUTE] spam-001.txt                   -> spam_or_promo      (1.00) -> archive_spam
+
+  Backend: rules.  6/7 routed confidently; 1 sent to human_review.

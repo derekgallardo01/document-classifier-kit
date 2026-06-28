@@ -1,0 +1,12 @@
+{
+  "description": "Golden eval cases for the document classifier. Each case is (fixture, expected_label). The harness runs every case, builds a confusion matrix, and reports per-class precision/recall/F1 plus overall accuracy. CI gates on 100% accuracy on the bundled fixtures; for a real engagement you'd lower this and gate on per-class F1 thresholds instead.",
+  "cases": [
+    {"id": "invoice-001",         "fixture": "invoice-001.txt",         "expected": "invoice"},
+    {"id": "purchase-order-001",  "fixture": "purchase-order-001.txt",  "expected": "purchase_order"},
+    {"id": "contract-001",        "fixture": "contract-001.txt",        "expected": "contract"},
+    {"id": "complaint-001",       "fixture": "complaint-001.txt",       "expected": "customer_complaint"},
+    {"id": "job-application-001", "fixture": "job-application-001.txt", "expected": "job_application"},
+    {"id": "spam-001",            "fixture": "spam-001.txt",            "expected": "spam_or_promo"},
+    {"id": "ambiguous-001",       "fixture": "ambiguous-001.txt",       "expected": "unknown"}
+  ]
+}

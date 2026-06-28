@@ -1,0 +1,12 @@
+{
+  "repo": "document-classifier-kit",
+  "title": "Document Classifier Kit",
+  "tagline": "Schema-driven document classifier with confidence-routed human review and a golden eval harness reporting per-class precision/recall/F1. Stub rules backend by default; one env var swaps to an LLM.",
+  "kicker": "Classification · Routing · Eval-Gated · Capability Demo",
+  "features": [
+    {"label": "Classes", "value": "6 + unknown fallback"},
+    {"label": "Fixtures", "value": "7 worked docs"},
+    {"label": "Tests + Evals", "value": "23 pytest + 7 golden"}
+  ],
+  "theme": {"primary": "#6d28d9", "accent": "#8b5cf6"}
+}

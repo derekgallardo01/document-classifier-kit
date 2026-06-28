@@ -1,0 +1,16 @@
+PURCHASE ORDER
+
+PO #: NW-PO-2026-1199
+PO Number: NW-PO-2026-1199
+Order Date: 2026-06-10
+
+Supplier: Acme Widgets Ltd.
+Ship To: Northwind Trading Co., 500 Trading Way, London SW1A 1AA
+
+Line items:
+- 4 x Steel ball bearings (1000ct box)
+- 2 x Bronze bushings (set of 50)
+- 12 x Lubricant cartridges
+
+Requested delivery: 2026-06-30
+Authorized buyer: J. Smith, Procurement Lead

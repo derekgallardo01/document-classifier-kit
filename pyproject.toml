@@ -1,0 +1,27 @@
+[project]
+name = "doc-classifier-kit"
+version = "1.0.0"
+description = "Schema-driven document classifier + confidence-thresholded human-review router. Default is a deterministic keyword-and-rule classifier so the kit runs anywhere; one env var swaps to an LLM classifier. Golden eval harness gates CI on per-class precision/recall/F1."
+authors = [{name = "Derek Gallardo", email = "derekgallardo01@gmail.com"}]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+llm = [
+    "anthropic>=0.40.0",
+]
+
+[project.scripts]
+doc-classifier = "doc_classifier.cli:main"
+
+[project.urls]
+Repository = "https://github.com/derekgallardo01/document-classifier-kit"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

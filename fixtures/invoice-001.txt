@@ -1,0 +1,17 @@
+ACME WIDGETS LTD.
+
+Invoice #: INV-2026-00482
+Invoice Date: 2026-06-15
+
+Bill To: Northwind Trading Co.
+Remit To: Acme Widgets Ltd., 100 Industrial Park, Manchester
+
+Item                              Qty   Unit Price   Line Total
+Steel ball bearings (1000 ct)     4     125.00       500.00
+Bronze bushings (set of 50)       2     89.50        179.00
+
+Subtotal: 679.00
+Tax: 135.80
+Amount Due: 814.80
+
+Payment terms: Net 30.
