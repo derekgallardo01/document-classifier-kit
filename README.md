@@ -38,6 +38,14 @@ docker run --rm doc-classifier pytest -q              # runs the tests
 docker run --rm doc-classifier doc-classifier classify fixtures/contract-001.txt
 ```
 
+## Example: production scenario
+
+**[examples/inbox_router.py](examples/inbox_router.py)** — Routes a directory of documents into per-queue subfolders (simulates Azure Service Bus / Postgres queue push) with a JSONL audit log of every decision
+
+```bash
+python examples/inbox_router.py
+```
+
 ## What it's for
 
 The "automate our document intake" job comes up on every SMB ops
